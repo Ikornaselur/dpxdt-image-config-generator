@@ -1,20 +1,12 @@
 import sys
 from os.path import abspath
-from os import listdir
-from re import sub
+
+from utils import (
+    generate_title_from_file_name, writeline, lookahead, get_pngs)
 
 
 BEFORE_CONF = 'before.json'
 AFTER_CONF = 'after.json'
-
-
-def generate_title_from_file_name(file_name):
-    """Replace all symbols with spaces and "titleize" the file name
-
-    `foo-bar_baz.png` would become `Foo Bar Baz`
-    """
-    no_symbols = sub('[^a-zA-Z]', ' ', file_name)
-    return no_symbols.title()
 
 
 def config_entry(name, path):
@@ -30,26 +22,6 @@ def config_entry(name, path):
     string += 2*tab + '"log_path": "{}/{}.txt"\n'.format(path, no_ext)
     string += tab + '}'
     return string
-
-
-def writeline(string, f):
-    """Wrapper for writing the a string with newline to file"""
-    f.write(string + '\n')
-
-
-def lookahead(iterable):
-    """A for loop wrapper to check return if the item is the last item"""
-    it = iter(iterable)
-    last = it.next()
-    for val in it:
-        yield last, False
-        last = val
-    yield last, True
-
-
-def get_images(path):
-    """Return a list of all the png image files within the given path"""
-    return [png for png in listdir(path) if png.endswith('png')]
 
 
 def generate_config(conf, path, images):
@@ -68,8 +40,8 @@ def main(before_path, after_path):
     abs_before_path = abspath(before_path)
     abs_after_path = abspath(after_path)
 
-    before_images = get_images(abs_before_path)
-    after_images = get_images(abs_after_path)
+    before_images = get_pngs(abs_before_path)
+    after_images = get_pngs(abs_after_path)
 
     generate_config(BEFORE_CONF, abs_before_path, before_images)
     generate_config(AFTER_CONF, abs_after_path, after_images)
