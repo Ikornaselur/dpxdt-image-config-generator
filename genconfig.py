@@ -13,19 +13,21 @@ def generate_title_from_file_name(file_name):
 
     `foo-bar_baz.png` would become `Foo Bar Baz`
     """
-    no_ext = '.'.join(file_name.split('.')[:-1])
-    no_symbols = sub('[^a-zA-Z]', ' ', no_ext)
+    no_symbols = sub('[^a-zA-Z]', ' ', file_name)
     return no_symbols.title()
 
 
 def config_entry(name, path):
     """Return a string with the configuration entry based on name and path"""
     tab = '    '
+    no_ext = '.'.join(name.split('.')[:-1])
+    fancy_title = generate_title_from_file_name(no_ext)
+
     string = tab + '{\n'
-    string += 2*tab + '"name": "{}",\n'.format(
-        generate_title_from_file_name(name))
+    string += 2*tab + '"name": "{}",\n'.format(fancy_title)
     string += 2*tab + '"run_failed": false,\n'
-    string += 2*tab + '"image_path": "{}/{}"\n'.format(path, name)
+    string += 2*tab + '"image_path": "{}/{}.png",\n'.format(path, no_ext)
+    string += 2*tab + '"log_path": "{}/{}.txt"\n'.format(path, no_ext)
     string += tab + '}'
     return string
 
